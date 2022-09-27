@@ -1,0 +1,41 @@
+$black-color: #333;
+$header-size : 20px;
+
+
+
+.form-header{
+    font-size : $header-size;
+    color : $black-color;
+    font-weight : 500;
+}
+
+label{
+    font-weight : 500;
+}
+
+.form-control{
+    margin-bottom: 22px;
+}
+
+.form-footer{
+    max-width: -webkit-fill-available; 
+    width : 100%;
+    margin: auto;
+}
+
+.footer-button{
+    color: white; 
+    background-color: #0062cc; 
+    max-width: fit-content;
+}
+
+.submit-button{
+    margin-right : 12px;
+    @extend .footer-button;
+
+}
+
+.cancel-button{
+    margin-left: 12px; 
+    @extend .footer-button;
+}

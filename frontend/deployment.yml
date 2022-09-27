@@ -1,0 +1,41 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dexie-frontend-service
+spec:
+  selector:
+    app: dexie-frontend
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster : this port will be used along with external id 
+      # can be different from targetPort or same 
+      port: 4200
+      # Port to forward to inside the pod
+      targetPort: 4200
+      # Port accessible outside cluster
+      nodePort: 30004
+  type: LoadBalancer
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dexie-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dexie-frontend
+  template:
+    metadata:
+      labels:
+        app: dexie-frontend
+    spec:
+      containers:
+        - name: dexie-frontend
+          image: 1881881881881/dexie-frontend:latest
+          ports:
+            - containerPort: 4200

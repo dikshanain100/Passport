@@ -1,0 +1,87 @@
+<div class="container">
+
+  <div class="panelheader panelStyle" style="margin-top :5%">
+    <div class="row header-panel-row">
+      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " align="left">
+        <div class="form-header mb-4">LOGIN</div>
+      </div>
+
+      <!-- Register -->
+      <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " align="right">
+        <button class="btn btn-block register-btn" (click)="register();"
+          style="margin-left: 16px; color: white; background-color: #0062cc; max-width: fit-content">
+          Register
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="row" style="margin-bottom:6%">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+
+      <!-- Form -->
+      <form class="form-horizontal " [formGroup]="customerForm" (ngSubmit)="submitForm()">
+        <div class="container">
+
+          <div class="form-group ">
+            <div class="customerDiv">
+              <label for="customer_email" class="labelFont">Email</label>
+              <input type="text" class="form-control" id="customer_email" placeholder="Enter email"
+                formControlName="customer_email"
+                [ngClass]="{'is-invalid': (submitted && fetch.customer_email.errors) ||(fetch.customer_email.errors && (fetch.customer_email.touched || fetch.customer_email.dirty))}">
+
+
+              <span class="help-block  error-block" *ngIf="(submitted && fetch.customer_email.errors)"> there
+                <p *ngIf="fetch.customer_email.errors?.required">
+                  <small>Email is required.</small>
+                </p>
+              </span>
+            </div>
+          </div>
+
+
+          <div class="form-group ">
+            <div class="customerDiv">
+              <label for="customer_password" class="labelFont">Password</label>
+              <input type="password" class="form-control" id="customer_password" placeholder="Enter password"
+                formControlName="customer_password"
+                [ngClass]="{'is-invalid': (submitted && fetch.customer_password.errors) ||(fetch.customer_password.errors && (fetch.customer_password.touched || fetch.customer_password.dirty))}">
+
+              <span class="help-block  error-block" *ngIf="(submitted && customerForm.get('customer_password').errors)">
+                <p *ngIf="fetch.customer_password.errors?.required">
+                  <small>Password is required.</small>
+                </p>
+              </span>
+            </div>
+          </div>
+
+
+        </div>
+        <div>
+          <div class="row form-footer">
+
+            <div class="col-xs-6 col-lg-6 col-md-6">
+              <button type="close" class="btn btn-block spacer-top-sm text-left cancel-button" (click)="onCancel()">
+                Cancel
+              </button>
+            </div>
+
+            <div class="col-xs-6 col-lg-6 col-md-6 " align="right">
+              <button class="btn btn-block spacer-top-sm submit-button " type="submit">
+                Submit
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+
+
+</div>

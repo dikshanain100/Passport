@@ -1,0 +1,41 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: dexie-backend-service
+spec:
+  selector:
+    app: dexie-backend
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster : this port will be used along with external id 
+      # can be different from targetPort or same 
+      port: 8080  
+      # Port to forward to inside the pod
+      targetPort: 8080
+      # Port accessible outside cluster
+      nodePort: 30003
+  type: LoadBalancer
+
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dexie-backend
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: dexie-backend
+  template:
+    metadata:
+      labels:
+        app: dexie-backend
+    spec:
+      containers:
+        - name: dexie-backend
+          image: 1881881881881/dexie-backend:latest
+          ports:
+            - containerPort: 8080

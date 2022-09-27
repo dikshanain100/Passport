@@ -1,0 +1,25 @@
+<h1>You have successfully logged in !!</h1>
+<img src="./assets/images/topSecret.jpg" alt="image" class="secretImg">
+
+<div class="account-balance-wrapper">
+  <div *ngIf="accountBalance">
+    Your balance is: {{accountBalance?.balance}}$
+  </div>
+  <br>
+  <div>
+    <button (click)="getBalance()">Get Account Balance</button>
+  </div>
+</div>
+
+
+<!-- Logout -->
+<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 " align ="right">
+    <button class="btn btn-block logout-btn" (click)="logout();"
+      style="margin-left: 16px; color: white; background-color: #0062cc; max-width: fit-content">
+     Logout
+    </button>
+  </div>
+
+
+
+  
