@@ -110,6 +110,7 @@ export class LoginComponent implements OnInit {
         this.customerForm.reset();
       },
       (err: Object) => {
+        console.log('err :: ', err)
         alert('Error while login ' + err);
       })
       .catch((err: Object) => {

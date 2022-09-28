@@ -46,7 +46,7 @@ export class LandingPageComponent implements OnInit {
 
       },
       (err: Object) => {
-        console.log('err from backend service: ', err);
+        console.log('err from backend service: ', err );
       })
       .catch((err: Object) => {
       });
