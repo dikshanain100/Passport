@@ -1,5 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require("bcryptjs"); 
+const session = require('express-session');
 
 function initialize(passport, getUserByEmail) {
   const authenticateUser = async (email, password, done) => {
@@ -13,6 +14,12 @@ function initialize(passport, getUserByEmail) {
     try {
       if (await bcrypt.compare(password, user.password)) {
         console.log('password good')
+
+        let userWithoutPassword = {};
+        userWithoutPassword.email = user.email;
+        userWithoutPassword.username = user.username;
+        // session.user = userWithoutPassword;
+        // console.log('session id inside login :: ', session.id)
         return done(null, user)
       } else {
         console.log('password not good')

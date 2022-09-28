@@ -11,27 +11,7 @@ const database = require("./database/connection");
 const session = require('express-session');
 const MongoDBSession = require('connect-mongodb-session')(session); // to store session info in MongoDB
 const passport = require("passport");
-// const passportLocal = require("passport-local").Strategy;
-const UserModel = require("./models/user");
-const bcrypt = require("bcryptjs");
 
-const initializePassport = require('./passport/passport-config')
-initializePassport(
-  passport,
-  async email => {
-    let email1 = await UserModel.findOne({ email: email });
-    console.log('email1 :: ', email1);
-    return email1;
-  }
-
-)
-
-const users = [
-  {
-    email: 'passport3@gmail.com',
-    password: '$2a$12$1mHfdnwhEVb2ckGnSSTo5.L6jE2Mkw21h254j8sEthanSMkoFkwK6'
-  }
-]
 
 
 //database connection
@@ -108,108 +88,13 @@ app.all('*', function (req, res, next) {
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 //////////////////////////////END of middlelayer/////////////////////////////////////////////////////////////
 
-// app.use("/", item);
-// app.use("/other/", other);
+app.use("/", item);
+app.use("/other/", other);
 
 
-
-
-///////////////////////////////////////try code////////////////////////////////////////////////////////////
-//routes
-// app.get('/', checkAuthenticated, (req, res) => {
-//   res.render('index.ejs', { name: req.user.name })
-// })
-
-
-app.post('/login', passport.authenticate('local'), (req, res) => {
-  console.log("userss: ", req.user);
-
-  //response in case of success
-  res.status(200).send({
-    message: "Matched.",
-    error: false,
-    passwordMismatch: false
-  })
-
-  //in case of error : get's response is send in error block in UI 
-
-  // For this to work UI and backend should be on same domain
-  // successRedirect: 'http://localhost:4200/landing',
-  // failureRedirect: 'http://localhost:4200/login',
-  // failureFlash: true
-})
-
-
-app.post('/register', async (req, res) => {
-  const { custUsername, custEmail, custPassword } = req.body;
-  try {
-    let user = await UserModel.findOne({ custEmail });
-    //check this
-    if (user) {
-      return res.status(200).json({
-        message: "User exist",
-        userExist: true,
-      })
-    }
-
-    const hashedPwd = await bcrypt.hash(custPassword, 12);
-    let userData = new UserModel({
-      username: custUsername,
-      email: custEmail,
-      password: hashedPwd
-    });
-
-    userData.save((err) => {
-      if (err) {
-        return res.status(400).json({
-          message: "The user data was not saved",
-          userExist: true,
-          errorMessage: err.message
-        })
-      } else {
-        return res.status(200).json({
-          message: "User data was saved successfully",
-          userExist: false,
-        })
-      }
-    })
-  } catch (err) {
-    console.log('catch ', err)
-    // res.redirect('/register')
-    return res.status(400).json({
-      message: "The user data was not saved",
-      userExist: false,
-      errorMessage: err.message
-    })
-  }
-
-})
-
-app.delete('/logout', (req, res) => {
-  req.logOut()
-  res.redirect('/login')
-})
-
-function checkAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next()
-  }
-
-  res.redirect('/login')
-}
-
-function checkNotAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    console.log('is autheticated :: ')
-    return res.redirect('/')
-  }
-  next()
-}
-
-
-///////////////////////////////////////try code////////////////////////////////////////////////////////////
 
 // These middlelayer will run if there is not route match...If you put them before calling route; these will run first and give error everytime
 // Error message is send if router doesn't exist

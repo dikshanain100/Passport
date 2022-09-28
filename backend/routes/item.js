@@ -6,7 +6,19 @@ const https = require('https');
 const UserModel = require("../models/user");
 const bcrypt = require("bcryptjs");  //so that passwords are not recognized or changed by anyone
 const other = require("./other")
+const passport = require("passport");
+const initializePassport = require('../passport/passport-config')
 
+
+initializePassport(
+  passport,
+  async email => {
+    let email1 = await UserModel.findOne({ email: email });
+    console.log('email1 :: ', email1);
+    return email1;
+  }
+
+)
 
 
 
@@ -151,86 +163,45 @@ const validatePayloadMiddleware = (req, res, next) => {
   }
 };
 
-/**
- * Some hardcoded users to make the demo work
- */
-// const appUsers = {
-//   'max@gmail.com': {
-//     email: 'max@gmail.com',
-//     name: 'Max Miller',
-//     pw: '1234' // YOU DO NOT WANT TO STORE PW's LIKE THIS IN REAL LIFE - HASH THEM FOR STORAGE
-//   },
-//   'lily@gmail.com': {
-//     email: 'lily@gmail.com',
-//     name: 'Lily Walter',
-//     pw: '1235' // YOU DO NOT WANT TO STORE PW's LIKE THIS IN REAL LIFE - HASH THEM FOR STORAGE
-//   }
-// };
 
 
 
 /**
  * Log the user in.
  * User needs to provide pw and email, this is then compared to the pw in the "database"
- * If pw and email match, the user is fetched and stored into the session.
+ * If pw and email match, the user is fetched and stored into the session.  <-- Done by passport lib
  * Finally the user is returned from the request.
  */
-router.post('/login', validatePayloadMiddleware, (req, res) => {
-  const custEmail = req.body.email;
-  const custPassword = req.body.password;
-  console.log('req.body :: ', req.body);
-  UserModel.findOne({ email: custEmail }, async (err, user) => {
-    if (err) {
-      res.status(200).send({
-        message: "Error in backend API",
-        error: true
-      })
-    } else {
-      console.log('user :: ', user)
-      if (!user || user == null) {
-        res.status(200).send({
-          message: "Couldn't find user details",
-          error: false
-        })
-      }
-      else {
-        console.log('user from mongo db  ::', user)
-        const isMatch = await bcrypt.compare(custPassword, user.password)
-        if (!isMatch) {
-          res.status(200).send({
-            message: "Password mismatch. Please try again",
-            error: false,
-            passwordMismatch: true
-          })
-        }
-        else {
+ router.post('/login', passport.authenticate('local'), (req, res) => {
+  console.log("userss after passport lib : ", req.user);
 
-          let userWithoutPassword = {};
-          userWithoutPassword.email = user.email;
-          userWithoutPassword.username = user.username;
-          req.session.user = userWithoutPassword;
-          // req.session.save();
-          console.log('session id inside login :: ', req.session.id)
-          res.status(200).send({
-            message: "Matched.",
-            error: false,
-            passwordMismatch: false
-          })
 
-        }
-      }
-    }
-
+  //response in case of success
+  let userWithoutPassword = {};
+  userWithoutPassword.email = req.user.email;
+  userWithoutPassword.username = req.user.username;
+  req.session.user = userWithoutPassword;
+  console.log('session id inside login :: ', req.session.id)
+  res.status(200).send({
+    message: "Matched.",
+    error: false,
+    passwordMismatch: false
   })
 
-});
+  //in case of error : get's response is send in error block in UI 
+
+  // For this to work UI and backend should be on same domain  :::
+  // successRedirect: 'http://localhost:4200/landing',
+  // failureRedirect: 'http://localhost:4200/login',
+  // failureFlash: true
+})
 
 
 
 /**
- * Check if user is logged in.
+ * Check if user is logged in. >>check how to do this?
  */
-router.get('/login', (req, res) => {
+router.get('/login1', (req, res) => {
   console.log('inside get -- login ', req.session.id)
   req.session.user ? res.status(200).send({ loggedIn: 'true' }) : res.status(200).send({ loggedIn: 'false' });
 });
