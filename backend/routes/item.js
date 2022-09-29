@@ -14,7 +14,6 @@ initializePassport(
   passport,
   async email => {
     let email1 = await UserModel.findOne({ email: email });
-    console.log('email1 :: ', email1);
     return email1;
   }
 
@@ -172,16 +171,19 @@ const validatePayloadMiddleware = (req, res, next) => {
  * If pw and email match, the user is fetched and stored into the session.  <-- Done by passport lib
  * Finally the user is returned from the request.
  */
- router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', validatePayloadMiddleware, passport.authenticate('local'), (req, res) => {
   console.log("userss after passport lib : ", req.user);
 
+  //response in case of success 
 
-  //response in case of success
-  let userWithoutPassword = {};
-  userWithoutPassword.email = req.user.email;
-  userWithoutPassword.username = req.user.username;
-  req.session.user = userWithoutPassword;
-  console.log('session id inside login :: ', req.session.id)
+  //// Separate session is not required here as we will be using passport session which internally uses express-session
+  // let userWithoutPassword = {};
+  // userWithoutPassword.email = req.user.email;
+  // userWithoutPassword.username = req.user.username;
+  // req.session.user = userWithoutPassword;
+
+  // console.log('session id inside login :: ', req.session.id)
+  console.log('passport session inside balance :: ', req.session.passport.user)
   res.status(200).send({
     message: "Matched.",
     error: false,
@@ -190,7 +192,7 @@ const validatePayloadMiddleware = (req, res, next) => {
 
   //in case of error : get's response is send in error block in UI 
 
-  // For this to work UI and backend should be on same domain  :::
+  //// For this to work UI and backend should be on same domain  :::
   // successRedirect: 'http://localhost:4200/landing',
   // failureRedirect: 'http://localhost:4200/login',
   // failureFlash: true
@@ -199,9 +201,9 @@ const validatePayloadMiddleware = (req, res, next) => {
 
 
 /**
- * Check if user is logged in. >>check how to do this?
+ * Check if user is logged in. >>can remove this as well
  */
-router.get('/login1', (req, res) => {
+router.get('/login', (req, res) => {
   console.log('inside get -- login ', req.session.id)
   req.session.user ? res.status(200).send({ loggedIn: 'true' }) : res.status(200).send({ loggedIn: 'false' });
 });
@@ -224,27 +226,32 @@ router.post('/logout', (req, res) => {
  * Checks if user is logged in, by checking if user is stored in session.
  * In actual scenario it canbe checked via checking session id in Mongo DB
  */
-const authMiddleware = (req, res, next) => {
-  //console.log('aut middlelayer :: ', req.session);
-  console.log('session id:: authMiddleware :: ', req.session.id)
-  if (req.session && req.session.user) {
-    next();
-  } else {
-    res.status(403).send({
-      errorMessage: 'You must be logged in.'
-    });
+// const authMiddleware = (req, res, next) => {
+//   if (req.session && req.session.passport.user) {
+//     console.log('req.session ::  ', req.session)
+//     console.log('req.session.passport.user ::  ', req.session.passport.user)
+//     next();
+//   } else {
+//     res.status(403).send({
+//       errorMessage: 'You must be logged in.'
+//     });
+//   }
+// };
+
+
+/* Check if user is Authenticated 
+* Don't need self craeted auth Middleware then 
+*/
+const checkAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {   //fucntion present in passport lib 
+    return next()
   }
-};
-
-
-/* Check if session is valid */
+}
 
 
 
-router.get("/landing", authMiddleware, (req, res) => {
-  console.log('inside landing :: ', req.body)
-  //return  res
-
+router.get("/landing", checkAuthenticated, (req, res) => {
+  console.log('inside landing ', req)
 })
 
 
@@ -301,16 +308,15 @@ const getBalance = (email) => {
 /**
  * Endpoint to get users' account balance. Uses AuthMiddleware, such that only authenticated users can fetch balance.
  */
-router.get('/balance', authMiddleware, (req, res) => {
-  const user = req.session.user;
-  console.log('user :: ', user)
-  const balance = getBalance(user.email);
+router.get('/balance', checkAuthenticated, (req, res) => {
+  //const user = req.session.user; Not required, as will fetch value from passport session
+  const balance = getBalance(req.session.passport.user.email);
   if (balance) {
     res.status(200).send({
       balance: balance
     })
   } else {
-    res.status(403).send({
+    res.status(403).send({ 
       errorMessage: 'Access Denied.'
     });
   }

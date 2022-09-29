@@ -35,7 +35,7 @@ const routes: Routes = [
   {
     path: 'landing',   
     loadChildren: './landing-page/landing-page.module#LandingPageModule',
-    // canActivate: [AuthGuard]
+    canActivate: [AuthGuard]
   }
 ]   
 
