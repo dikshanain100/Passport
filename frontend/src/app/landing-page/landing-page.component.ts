@@ -29,7 +29,8 @@ export class LandingPageComponent implements OnInit {
         this.accountBalance = response;
       },
       (error)=>{
-        alert('got error while fetching data');
+        console.log(error)
+        alert('got error while fetching data : ');
       }
     )
     .catch((err: Object) => {

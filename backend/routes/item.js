@@ -199,18 +199,27 @@ router.post('/login', validatePayloadMiddleware, passport.authenticate('local'),
 
 
 
+
 /**
- * Check if user is logged in. >>can remove this as well
- */
-router.get('/login', (req, res) => {
-  console.log('inside get -- login ', req.session.id)
-  req.session.user ? res.status(200).send({ loggedIn: 'true' }) : res.status(200).send({ loggedIn: 'false' });
-});
+  * Check if user is logged in. >>should not use credentials again 
+  * This projectdoesn't require this part as , redirections are handled at frontend only using Auth Guard class
+  */
+// router.get('/login', (req, res) => {
+// console.log('inside login get');
+//   if (req.isAuthenticated()) {   //function present in passport lib 
+//     res.status(200).send({ loggedIn: 'true' })
+//   }
+//   else {
+//     res.status(200).send({ loggedIn: 'false' });
+//   }
+
+// });
 
 /**
  * Log the user out of the application.
  */
 router.post('/logout', (req, res) => {
+  // req.logOut(); //passport session and all other session 
   req.session.destroy((err) => {
     if (err) {
       res.status(500).send('Could not log out.');
@@ -223,7 +232,7 @@ router.post('/logout', (req, res) => {
 
 /**
  * Checks if user is logged in, by checking if user is stored in session.
- * In actual scenario it canbe checked via checking session id in Mongo DB
+ * In actual scenario it can be checked via checking session id in Mongo DB
  */
 // const authMiddleware = (req, res, next) => {
 //   if (req.session && req.session.passport.user) {
@@ -242,8 +251,15 @@ router.post('/logout', (req, res) => {
 * Don't need self craeted auth Middleware then 
 */
 const checkAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {   //fucntion present in passport lib 
+  if (req.isAuthenticated()) {   //function present in passport lib 
+    console.log('authentic user')
     return next()
+  }
+  else {
+    console.log('not authenticated')
+    res.status(403).send({
+      errorMessage: 'You must be logged in.'
+    });
   }
 }
 
@@ -315,7 +331,7 @@ router.get('/balance', checkAuthenticated, (req, res) => {
       balance: balance
     })
   } else {
-    res.status(403).send({ 
+    res.status(403).send({
       errorMessage: 'Access Denied.'
     });
   }

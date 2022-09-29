@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const session = require('express-session');
 
 function initialize(passport, getUserByEmail) {
-  const authenticateUser = async (email, password, done) => {
+  const authenticateUser = async (email, password1, done) => { //email is received from line 27 , whereas password is authomatically fetched from req
     const user = await getUserByEmail(email)
     if (user == null) {
       console.log('null')
@@ -11,7 +11,7 @@ function initialize(passport, getUserByEmail) {
     }
 
     try {
-      if (await bcrypt.compare(password, user.password)) {
+      if (await bcrypt.compare(password1, user.password)) {
         console.log('password good')
         return done(null, user)
       } else {
@@ -24,7 +24,7 @@ function initialize(passport, getUserByEmail) {
     }
   }
 
-  passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser))
+  passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser)) //email is automatically fetched from req
   passport.serializeUser((user, done) => done(null, user))
   passport.deserializeUser((user, done) => {
     return done(null, user)
