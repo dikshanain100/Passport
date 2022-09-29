@@ -12,9 +12,9 @@ const initializePassport = require('../passport/passport-config')
 
 initializePassport(
   passport,
-  async email => {
-    let email1 = await UserModel.findOne({ email: email });
-    return email1;
+  async userByEmail => {
+    let user = await UserModel.findOne({ email: userByEmail });
+    return user;
   }
 
 )
@@ -172,7 +172,6 @@ const validatePayloadMiddleware = (req, res, next) => {
  * Finally the user is returned from the request.
  */
 router.post('/login', validatePayloadMiddleware, passport.authenticate('local'), (req, res) => {
-  console.log("userss after passport lib : ", req.user);
 
   //response in case of success 
 
