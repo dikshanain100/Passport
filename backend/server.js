@@ -13,7 +13,6 @@ const MongoDBSession = require('connect-mongodb-session')(session); // to store 
 const passport = require("passport");
 
 
-
 //database connection
 mongoose.connect(
   database.connection, {
@@ -42,6 +41,7 @@ mongoose.connect(
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 
 /**
  * Setting up CORS, such that it can work together with an Application at another domain / port
