@@ -1,6 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require("bcryptjs");
-const session = require('express-session');
+
 
 function initialize(passport, getUserByEmail) {
   const authenticateUser = async (email, password1, done) => { //email is received from line 27 , whereas password is authomatically fetched from req

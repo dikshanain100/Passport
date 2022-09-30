@@ -88,7 +88,6 @@ app.all('*', function (req, res, next) {
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 //////////////////////////////END of middlelayer/////////////////////////////////////////////////////////////
 
 app.use("/", item);

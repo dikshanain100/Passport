@@ -120,6 +120,7 @@ router.post('/login', validatePayloadMiddleware, passport.authenticate('local'),
  */
 router.post('/logout', (req, res) => {
   // req.logOut(); //passport session and all other session 
+  res.clearCookie('connect.sid');
   req.session.destroy((err) => {
     if (err) {
       res.status(500).send('Could not log out.');
