@@ -11,6 +11,7 @@ function initialize(passport, getUserByEmail) {
       // return done(null, false, { message: 'No user with that email' })
       //this helps in sending response back to login api ..
       //only issue is that it will set cookie in browser even if person hasn't logged in
+      //and this issue is resolved in login router by clearing session at that time 
       return done(null, email, { message: 'No user with that email' })
 
     }

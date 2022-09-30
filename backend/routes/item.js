@@ -67,7 +67,8 @@ router.post('/login', validatePayloadMiddleware, passport.authenticate('local'),
 
   console.log('req.authInfo  :: ', req.authInfo.message);
   if (req.authInfo.message == 'Password incorrect') {
-    console.log('inside login password incorrect')
+    res.clearCookie('connect.sid');
+    req.session.destroy();
     res.status(200).send({
       message: req.authInfo.message,
       error: false,
@@ -75,11 +76,14 @@ router.post('/login', validatePayloadMiddleware, passport.authenticate('local'),
     })
   }
   else if (req.authInfo.message == 'No user with that email') {
+    res.clearCookie('connect.sid');
+    req.session.destroy();
     res.status(200).send({
       message: req.authInfo.message,
       error: false,
       passwordMismatch: true
     })
+    
   }
   else {
     res.status(200).send({

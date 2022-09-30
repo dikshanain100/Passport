@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private _loginService: LoginService,
     public formBuilder: FormBuilder,
-    private _router: Router,
+    private _router: Router
   ) {
     this.loggedIn = sessionStorage.getItem('loggedIn');
   }
